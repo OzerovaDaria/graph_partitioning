@@ -17,8 +17,8 @@ def draw_graph(partitioning, alg_name, graph_type, num):
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
     fig.savefig("graph-" + alg_name + "-" +  graph_type + "-" + str(num) + ".png")
 
-G = nx.complete_graph(20)
-for num in [2, 4, 5, 10]:
+G = nx.complete_graph(24)
+for num in [2, 4, 6, 8]:
     partitioning = nxmetis.partition(G, num)[1]
     print(num, partitioning)
     draw_graph(partitioning, "metis", "complete", num)
