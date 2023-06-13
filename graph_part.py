@@ -15,7 +15,7 @@ def draw_graph(partitioning, alg_name, graph_type, num):
             if node in partitioning[i]:
                 color_map.append(c)
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
-    fig.savefig(alg_name + "-" +  graph_type + "-" + str(num) + ".png")
+    fig.savefig("graphs/" + alg_name + "-" +  graph_type + "-" + str(num) + ".png")
 
 G = nx.complete_graph(24)
 for num in [2, 4, 6, 8]:
