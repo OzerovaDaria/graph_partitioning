@@ -9,9 +9,10 @@ def draw_graph(partitioning, alg_name, graph_type):
     colors, color_map = [], []
     n = len(partitioning)
     for i in range(n):
+        color = '#%06X' % randint(0, 0xFFFFFF)
         for node in G:
             if node in partitioning[i]:
-                color_map.append('#%06X' % randint(0, 0xFFFFFF))
+                color_map.append(color)
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
     fig.savefig("graph-" + alg_name + "-" +  graph_type + ".png")
 
