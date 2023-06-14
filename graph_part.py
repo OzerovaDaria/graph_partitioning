@@ -18,7 +18,7 @@ def draw_graph(G, partitioning, alg_name, graph_type, num):
                 node = int(node)
                 #print(node)
             if node in partitioning[i]:
-                print("FIND", node, i)
+                #print("FIND", node, i)
                 color_map.append(c)
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
     fig.savefig("graphs/" + alg_name + "-" +  graph_type + "-" + str(num) + ".png")
@@ -123,10 +123,30 @@ def get_partition(G, subgraphs_num, objective):
     return groups
 
 G = nx.complete_graph(24)
+G1 = nx.petersen_graph()
+G2 = nx.dorogovtsev_goltsev_mendes_graph(4)
+G3 = nx.balanced_tree(2, 4)
+num = 2
+partitioning = nxmetis.partition(G1, num)[1]
+draw_graph(G1, partitioning, "metis", "petersen", num)
+for i in range(4):
+    partitioning = get_partition(G1, num, i)
+    for k in range(len(partitioning)):
+        for j in range(len(partitioning[k])):
+            partitioning[k][j] = int(partitioning[k][j])
+    #print("part", i, partitioning)
+    draw_graph(G1, partitioning, "obj_func_" + str(i), "petersen", num)
+
+
+
 for num in [2, 4, 6, 8]:
     partitioning = nxmetis.partition(G, num)[1]
     print(num, partitioning)
     draw_graph(G, partitioning, "metis", "complete", num)
+    partitioning = nxmetis.partition(G2, num)[1]
+    draw_graph(G2, partitioning, "metis", "DGM", num)
+    partitioning = nxmetis.partition(G3, num)[1]
+    draw_graph(G3, partitioning, "metis", "balanced_tree", num)
     for i in range(4):
         partitioning = get_partition(G, num, i)
         #print("part", i, partitioning)
@@ -135,3 +155,15 @@ for num in [2, 4, 6, 8]:
                 partitioning[k][j] = int(partitioning[k][j])
         #print("part", i, partitioning)
         draw_graph(G, partitioning, "obj_func_" + str(i), "complete", num)
+        
+        partitioning = get_partition(G2, num, i)
+        for k in range(len(partitioning)):
+            for j in range(len(partitioning[k])):
+                partitioning[k][j] = int(partitioning[k][j])
+        draw_graph(G2, partitioning, "obj_func_" + str(i), "DGM", num)
+        
+        partitioning = get_partition(G3, num, i)
+        for k in range(len(partitioning)):
+            for j in range(len(partitioning[k])):
+                partitioning[k][j] = int(partitioning[k][j])
+        draw_graph(G3, partitioning, "obj_func_" + str(i), "balanced_tree", num)
