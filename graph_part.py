@@ -14,6 +14,9 @@ def draw_graph(G, partitioning, alg_name, graph_type, num):
         colors.append('#%06X' % randint(0, 0xFFFFFF))
     for i, c in zip(range(n), colors):
         for node in G:
+            if alg_name != "metis":
+                node = int(node)
+                #print(node)
             if node in partitioning[i]:
                 print("FIND", node, i)
                 color_map.append(c)
@@ -126,8 +129,9 @@ for num in [2, 4, 6, 8]:
     draw_graph(G, partitioning, "metis", "complete", num)
     for i in range(4):
         partitioning = get_partition(G, num, i)
-        print("part", i, partitioning)
-        for lst in partitioning:
-            for i in range(len(lst)):
-                lst[i] = int(lst[i])
+        #print("part", i, partitioning)
+        for k in range(len(partitioning)):
+            for j in range(len(partitioning[k])):
+                partitioning[k][j] = int(partitioning[k][j])
+        #print("part", i, partitioning)
         draw_graph(G, partitioning, "obj_func_" + str(i), "complete", num)
