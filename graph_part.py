@@ -46,7 +46,7 @@ def ratio_cut(G, groups):
     for i in range(len(groups)):
         for j in range(i, len(groups)):
             if i != j:
-                print(cut(G, groups, i, j)/len(groups[i]), cut(G, groups, i, j)/len(groups[j]))
+                #print(cut(G, groups, i, j)/len(groups[i]), cut(G, groups, i, j)/len(groups[j]))
                 res += cut(G, groups, i, j)/len(groups[i]) + cut(G, groups, i, j)/len(groups[j])
     return res
 
@@ -55,7 +55,7 @@ def normilized_cut(G, groups):
     for i in range(len(groups)):
         for j in range(i, len(groups)):
             if i != j:
-                print(cut(G, groups, i, j)/vol(G, groups, i) + cut(G, groups, i, j)/vol(G, groups, j))
+                #print(cut(G, groups, i, j)/vol(G, groups, i) + cut(G, groups, i, j)/vol(G, groups, j))
                 res += cut(G, groups, i, j)/vol(G, groups, i) + cut(G, groups, i, j)/vol(G, groups, j)
     return res
 
@@ -64,7 +64,7 @@ def quotient_cut(G, groups):
     for i in range(len(groups)):
         for j in range(i, len(groups)):
             if i != j:
-                print(cut(G, groups, i, j)/min(vol(G, groups, i), vol(G, groups, j)), vol(G, groups, i), vol(G, groups, j))
+                #print(cut(G, groups, i, j)/min(vol(G, groups, i), vol(G, groups, j)), vol(G, groups, i), vol(G, groups, j))
                 res += cut(G, groups, i, j)/min(vol(G, groups, i), vol(G, groups, j))
     return res
 
@@ -77,7 +77,7 @@ def generate_subgraphs(topology, num_of_subgraphs):
         for i in range(num_of_subgraphs):
             nodes.append(np.argwhere(np.array(membership) == i).ravel())
             nodes[i] = [str(x) for x in nodes[i]]
-        print("SUBGRAPHS", nodes)
+        #print("SUBGRAPHS", nodes)
         return nodes
 
 def swap(G, groups):
@@ -90,28 +90,39 @@ def swap(G, groups):
     groups[j][j_b] = temp
     return groups
 
-def get_partition(G, subgraphs_num):
+def get_partition(G, subgraphs_num, objective):
     prev, iters = 0, 0
+    best_groups = []
     groups = generate_subgraphs(G, subgraphs_num)
     while iters < 200:
-        print("groups", groups)
-        obj_func = min_cut(G, groups)
-        print("RATIO", ratio_cut(G, groups))
-        print("normilized", normilized_cut(G, groups))
-        print("quotient", quotient_cut(G, groups))
-        print("OBJ FUNC", obj_func)
+        #print("groups", groups, objective)
+        if objective == 0:
+            obj_func = min_cut(G, groups)
+        if objective == 1:
+            obj_func =  ratio_cut(G, groups)
+        if objective == 2:
+            obj_func =  normilized_cut(G, groups)
+        if objective == 3:
+            obj_func = quotient_cut(G, groups)
         if iters == 0:
             prev = obj_func
-        if obj_func >= prev and iters > 10:
-            return prev
+            best_groups = groups
+        if obj_func >= prev:
+            if iters > 20:
+                return best_groups
+        else:
+            best_groups = groups
         groups = swap(G, groups)
         iters += 1
         prev  = obj_func
-    return prev
+    return groups
 
 G = nx.complete_graph(24)
 for num in [2, 4, 6, 8]:
     partitioning = nxmetis.partition(G, num)[1]
     print(num, partitioning)
     draw_graph(partitioning, "metis", "complete", num)
-print(get_partition(G, 4))
+    for i in range(4):
+        partitioning = get_partition(G, num, i)
+        print("part", i, partitioning)
+        draw_graph(partitioning, "obj_func_" + str(i), "complete", num)
