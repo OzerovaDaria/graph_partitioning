@@ -9,11 +9,13 @@ def draw_graph(G, partitioning, alg_name, graph_type, num):
     fig = plt.figure()
     colors, color_map = [], []
     n = len(partitioning)
+    print("DRAW", alg_name, partitioning)
     for i in range(n):
         colors.append('#%06X' % randint(0, 0xFFFFFF))
     for i, c in zip(range(n), colors):
         for node in G:
             if node in partitioning[i]:
+                print("FIND", node, i)
                 color_map.append(c)
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
     fig.savefig("graphs/" + alg_name + "-" +  graph_type + "-" + str(num) + ".png")
@@ -125,4 +127,7 @@ for num in [2, 4, 6, 8]:
     for i in range(4):
         partitioning = get_partition(G, num, i)
         print("part", i, partitioning)
+        for lst in partitioning:
+            for i in range(len(lst)):
+                lst[i] = int(lst[i])
         draw_graph(G, partitioning, "obj_func_" + str(i), "complete", num)
