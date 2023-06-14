@@ -5,7 +5,7 @@ from random import randint
 import numpy as np
 import pymetis
 
-def draw_graph(partitioning, alg_name, graph_type, num):
+def draw_graph(G, partitioning, alg_name, graph_type, num):
     fig = plt.figure()
     colors, color_map = [], []
     n = len(partitioning)
@@ -121,8 +121,8 @@ G = nx.complete_graph(24)
 for num in [2, 4, 6, 8]:
     partitioning = nxmetis.partition(G, num)[1]
     print(num, partitioning)
-    draw_graph(partitioning, "metis", "complete", num)
+    draw_graph(G, partitioning, "metis", "complete", num)
     for i in range(4):
         partitioning = get_partition(G, num, i)
         print("part", i, partitioning)
-        draw_graph(partitioning, "obj_func_" + str(i), "complete", num)
+        draw_graph(G, partitioning, "obj_func_" + str(i), "complete", num)
