@@ -5,22 +5,24 @@ import matplotlib.pyplot as plt
 from random import randint
 import numpy as np
 
-def draw_graph(G, partitioning, alg_name="metis", graph_type="DGM-", num=0):
+def draw_graph(G, partitioning, alg_name="metis", graph_type="DGMm", num=0):
     fig = plt.figure()
     colors, color_map = [], []
     n = len(partitioning)
     print("DRAW", alg_name, partitioning)
     for i in range(n):
         colors.append('#%06X' % randint(0, 0xFFFFFF))
-    for i, c in zip(range(n), colors):
-        for node in G:
-            if alg_name != "metis":
-                node = int(node)
-                #print(node)
+    for node in G:
+        if alg_name != "metis":
+            node = int(node)
+            #print(node)
+        for i in range(n):
             if node in partitioning[i]:
-                print("FIND", node, i)
-                color_map.append(c)
+                #print("FIND", node, i)
+                color_map.append(colors[i])
+    print(color_map)
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
+
     fig.savefig(graph_type + "-" + str(num) + ".png")
     
 G = nx.dorogovtsev_goltsev_mendes_graph(4)
