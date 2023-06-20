@@ -24,7 +24,7 @@ def draw_graph(G, partitioning, alg_name="ex", graph_type="DGM", num=0):
     fig.savefig(graph_type + "-" + str(num) + ".png")
     
 G = nx.dorogovtsev_goltsev_mendes_graph(4)
-print(nxmetis.partition(G, 6))
+#print(nxmetis.partition(G, 6))
 draw_graph(G, nxmetis.partition(G, 6)[1], num=0)
-print(nxmetis.partition(G, 6, options = MetisOptions(contig = True)))
-draw_graph(G, nxmetis.partition(G, 6, options = MetisOptions(contig = True))[1], num=1)
+#print(nxmetis.partition(G, 6, options = MetisOptions(ccorder = True)))
+draw_graph(G, nxmetis.partition(G, 6, options = MetisOptions(ccorder = True))[1], num=1)
