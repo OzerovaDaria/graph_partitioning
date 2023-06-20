@@ -23,7 +23,8 @@ def draw_graph(G, partitioning, alg_name="ex", graph_type="complete", num=0):
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
     fig.savefig(graph_type + "-" + str(num) + ".png")
     
-G = nx.complete_graph(20)
-print(nxmetis.partition(G, 2))
-draw_graph(G, nxmetis.partition(G, 2)[1])
-print(nxmetis.partition(G, 2, options = MetisOptions(contig = True)))
+G = nx.dorogovtsev_goltsev_mendes_graph(4)
+print(nxmetis.partition(G, 6))
+draw_graph(G, nxmetis.partition(G, 6)[1], num=0)
+print(nxmetis.partition(G, 6, options = MetisOptions(contig = True)))
+draw_graph(G, nxmetis.partition(G, 6, options = MetisOptions(contig = True))[1], num=1)
