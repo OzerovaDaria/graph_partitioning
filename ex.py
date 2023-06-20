@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from random import randint
 import numpy as np
 
-def draw_graph(G, partitioning, alg_name="ex", graph_type="DGM-ex", num=0):
+def draw_graph(G, partitioning, alg_name="metis", graph_type="DGM-ex", num=0):
     fig = plt.figure()
     colors, color_map = [], []
     n = len(partitioning)
@@ -18,7 +18,7 @@ def draw_graph(G, partitioning, alg_name="ex", graph_type="DGM-ex", num=0):
                 node = int(node)
                 #print(node)
             if node in partitioning[i]:
-                #print("FIND", node, i)
+                print("FIND", node, i)
                 color_map.append(c)
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
     fig.savefig(graph_type + "-" + str(num) + ".png")
