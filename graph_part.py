@@ -17,7 +17,7 @@ def draw_graph(G, partitioning, alg_name, graph_type, num):
             if node in partitioning[i]:
                 color_map.append(colors[i])
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
-    fig.savefig("graphs/" + alg_name + "-" +  graph_type + "-" + str(num) + ".png")
+    fig.savefig("graphs/" + alg_name + "-" +  graph_type + "-obj_func" + str(num) + ".png")
 
 def cut(G, groups, first_group, second_group):
     cut_size = 0
