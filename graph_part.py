@@ -9,17 +9,14 @@ def draw_graph(G, partitioning, alg_name, graph_type, num):
     fig = plt.figure()
     colors, color_map = [], []
     n = len(partitioning)
-    print("DRAW", alg_name, partitioning)
     for i in range(n):
         colors.append('#%06X' % randint(0, 0xFFFFFF))
-    for i, c in zip(range(n), colors):
-        for node in G:
-            if alg_name != "metis":
-                node = int(node)
-                #print(node)
+    for node in G:
+        if alg_name != "metis":
+            node = int(node)
+        for i in range(n):
             if node in partitioning[i]:
-                #print("FIND", node, i)
-                color_map.append(c)
+                color_map.append(colors[i])
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
     fig.savefig("graphs/" + alg_name + "-" +  graph_type + "-" + str(num) + ".png")
 
