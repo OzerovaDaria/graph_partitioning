@@ -147,6 +147,7 @@ G = nx.complete_graph(24)
 G1 = nx.petersen_graph()
 G2 = nx.dorogovtsev_goltsev_mendes_graph(4)
 G3 = nx.balanced_tree(2, 4)
+G4 = nx.hoffman_singleton_graph()
 num = 2
 partitioning = generate_subgraphs(G1, num)
 draw_graph(G1, partitioning, "metis", "petersen", num)
@@ -154,6 +155,13 @@ for i in range(4):
     partitioning = get_partition(G1, num, i)
     #print("part", i, partitioning)
     draw_graph(G1, partitioning, "obj_func_" + str(i), "petersen", num)
+
+partitioning = generate_subgraphs(G4, 10)
+draw_graph(G4, partitioning, "metis", "hoffman_singleton", 10)
+for i in range(4):
+    partitioning = get_partition(G4, 10, i)
+    #print("part", i, partitioning)
+    draw_graph(G4, partitioning, "obj_func_" + str(i), "hoffman_singleton", 10)
 
 for num in [2, 4, 6, 8]:
     partitioning = generate_subgraphs(G, num)
