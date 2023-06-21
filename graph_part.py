@@ -18,7 +18,7 @@ def draw_graph(G, partitioning, alg_name, graph_type, num):
             if node in partitioning[i]:
                 color_map.append(colors[i])
     nx.draw(G, ax=fig.add_subplot(), node_color=color_map, with_labels=True)
-    fig.savefig("graphs/" + alg_name + "-" +  graph_type + "-of" + str(num) + ".png")
+    fig.savefig("graphs/" + alg_name + "-" +  graph_type + "-f" + str(num) + ".png")
 
 def cut(G, groups, first_group, second_group):
     cut_size = 0
@@ -76,36 +76,41 @@ def generate_subgraphs(topology, num_of_subgraphs):
 
 def swap(G, groups):
     G_tmp_a, G_tmp_b = copy.deepcopy(G), copy.deepcopy(G)
-    print("GROUPS", groups)
+    #print("GROUPS", groups)
     i, j = randint(0, len(groups)-1), randint(0, len(groups)-1)
     if i == j:
         j = (i + 1) % len(groups)
     i_a, j_b = randint(0, len(groups[i])-1), randint(0, len(groups[j])-1)
-    print("Part: i = ", i, ": ", i_a)
-    print("Part: j = ", j, ": ", j_b)
-    G_tmp_a.remove_nodes_from(list(n for n in G.nodes if not((n in groups[i] and n != i_a) or n == j_b)))
-    G_tmp_b.remove_nodes_from(list(n for n in G.nodes if not((n in groups[j] and n != j_b) or n == i_a)))
-    print(G_tmp_a.nodes, nx.is_connected(G_tmp_a))
-    print(G_tmp_b.nodes, nx.is_connected(G_tmp_b))
+    #print("Part: i = ", i, ": ", i_a)
+    #print("Part: j = ", j, ": ", j_b)
+    G_tmp_a.remove_nodes_from(list(n for n in G.nodes if (not(n in groups[i]) and n != groups[j][j_b]) or n == groups[i][i_a]))
+    G_tmp_b.remove_nodes_from(list(n for n in G.nodes if (not(n in groups[j]) and n != groups[i][i_a]) or n == groups[j][j_b]))
+    #print(G_tmp_a.nodes, nx.is_connected(G_tmp_a))
+    #print(G_tmp_b.nodes, nx.is_connected(G_tmp_b))
     iters = 0
     while (not (nx.is_connected(G_tmp_a) and nx.is_connected(G_tmp_b))):
         if iters > 100:
             print("NO CHANGE\n\n")
             return groups
         iters += 1
-        print(G.edges)
-        print("GROUPS", groups)
+        #print(G.edges)
+        #print("GROUPS", groups)
         G_tmp_a, G_tmp_b = copy.deepcopy(G), copy.deepcopy(G)
         i, j = randint(0, len(groups)-1), randint(0, len(groups)-1)
         if i == j:
             j = (i + 1) % len(groups)
         i_a, j_b = randint(0, len(groups[i])-1), randint(0, len(groups[j])-1)
-        print("Part: i = ", i, ": ", i_a, ":", groups[i][i_a])
-        print("Part: j = ", j, ": ", j_b, ":", groups[j][j_b])
-        G_tmp_a.remove_nodes_from(list(n for n in G.nodes if not((n in groups[i] and n != i_a) or n == j_b)))
-        G_tmp_b.remove_nodes_from(list(n for n in G.nodes if not((n in groups[j] and n != j_b) or n == i_a)))
-        print(G_tmp_a.nodes, G_tmp_a.edges, nx.is_connected(G_tmp_a))
-        print(G_tmp_b.nodes, G_tmp_b.edges, nx.is_connected(G_tmp_b))
+        #print("Part: i = ", i, ": ", i_a, ":", groups[i][i_a])
+        #print("Part: j = ", j, ": ", j_b, ":", groups[j][j_b])
+        G_tmp_a.remove_nodes_from(list(n for n in G.nodes if (not(n in groups[i]) and n != groups[j][j_b]) or n == groups[i][i_a]))
+        G_tmp_b.remove_nodes_from(list(n for n in G.nodes if (not(n in groups[j]) and n != groups[i][i_a]) or n == groups[j][j_b]))
+    print(G.edges)
+    print("GROUPS", groups)
+    print("Part: i = ", i, ": ", i_a, ":", groups[i][i_a])
+    print("Part: j = ", j, ": ", j_b, ":", groups[j][j_b])
+    print(G_tmp_a.nodes, G_tmp_a.edges, nx.is_connected(G_tmp_a))
+    print(G_tmp_b.nodes, G_tmp_b.edges, nx.is_connected(G_tmp_b))
+
     temp = groups[i][i_a]
     groups[i][i_a] = groups[j][j_b]
     groups[j][j_b] = temp
