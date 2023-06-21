@@ -1,6 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import nxmetis
+from nxmetis.types import MetisOptions
 from random import randint
 import numpy as np
 import pymetis
@@ -12,8 +13,6 @@ def draw_graph(G, partitioning, alg_name, graph_type, num):
     for i in range(n):
         colors.append('#%06X' % randint(0, 0xFFFFFF))
     for node in G:
-        if alg_name != "metis":
-            node = int(node)
         for i in range(n):
             if node in partitioning[i]:
                 color_map.append(colors[i])
@@ -23,7 +22,7 @@ def draw_graph(G, partitioning, alg_name, graph_type, num):
 def cut(G, groups, first_group, second_group):
     cut_size = 0
     for edge in G.edges:
-        if (str(edge[0]) in groups[first_group] and str(edge[1]) in groups[second_group]) or (str(edge[1]) in groups[first_group] and str(edge[0]) in groups[second_group]):
+        if (edge[0] in groups[first_group] and edge[1] in groups[second_group]) or (edge[1] in groups[first_group] and edge[0] in groups[second_group]):
             cut_size += 1
     return cut_size
 
@@ -39,7 +38,7 @@ def min_cut(G, groups):
         #print("EDGE", edge, edge[0], edge[1])
         for group_num in range(len(groups)):
             #print("GROUP", group_num)
-            if str(edge[0]) in groups[group_num] and str(edge[1]) not in groups[group_num]:
+            if edge[0] in groups[group_num] and edge[1] not in groups[group_num]:
                 cut_size += 1
     return cut_size
 
@@ -71,16 +70,8 @@ def quotient_cut(G, groups):
     return res
 
 def generate_subgraphs(topology, num_of_subgraphs):
-        adjacency_list, nodes = [], []
-        for i in topology.nodes(): 
-            if np.fromiter(topology.neighbors(i), int).size != 0:
-                adjacency_list.append(np.fromiter(topology.neighbors(i), int))
-        n_cuts, membership = pymetis.part_graph(num_of_subgraphs, adjacency=adjacency_list)
-        for i in range(num_of_subgraphs):
-            nodes.append(np.argwhere(np.array(membership) == i).ravel())
-            nodes[i] = [str(x) for x in nodes[i]]
         #print("SUBGRAPHS", nodes)
-        return nodes
+        return nxmetis.partition(topology, num_of_subgraphs, options = MetisOptions(ccorder = True))[1]
 
 def swap(G, groups):
     i, j = randint(0, len(groups)-1), randint(0, len(groups)-1)
@@ -124,43 +115,26 @@ G1 = nx.petersen_graph()
 G2 = nx.dorogovtsev_goltsev_mendes_graph(4)
 G3 = nx.balanced_tree(2, 4)
 num = 2
-partitioning = nxmetis.partition(G1, num)[1]
+partitioning = generate_subgraphs(G1, num)
 draw_graph(G1, partitioning, "metis", "petersen", num)
 for i in range(4):
     partitioning = get_partition(G1, num, i)
-    for k in range(len(partitioning)):
-        for j in range(len(partitioning[k])):
-            partitioning[k][j] = int(partitioning[k][j])
     #print("part", i, partitioning)
     draw_graph(G1, partitioning, "obj_func_" + str(i), "petersen", num)
 
-
-
 for num in [2, 4, 6, 8]:
-    partitioning = nxmetis.partition(G, num)[1]
-    print(num, partitioning)
+    partitioning = generate_subgraphs(G, num)
+    #print(num, partitioning)
     draw_graph(G, partitioning, "metis", "complete", num)
-    partitioning = nxmetis.partition(G2, num)[1]
+    partitioning = generate_subgraphs(G2, num)
     draw_graph(G2, partitioning, "metis", "DGM", num)
-    partitioning = nxmetis.partition(G3, num)[1]
+    partitioning = generate_subgraphs(G3, num)
     draw_graph(G3, partitioning, "metis", "balanced_tree", num)
     for i in range(4):
         partitioning = get_partition(G, num, i)
         #print("part", i, partitioning)
-        for k in range(len(partitioning)):
-            for j in range(len(partitioning[k])):
-                partitioning[k][j] = int(partitioning[k][j])
-        #print("part", i, partitioning)
         draw_graph(G, partitioning, "obj_func_" + str(i), "complete", num)
-        
         partitioning = get_partition(G2, num, i)
-        for k in range(len(partitioning)):
-            for j in range(len(partitioning[k])):
-                partitioning[k][j] = int(partitioning[k][j])
         draw_graph(G2, partitioning, "obj_func_" + str(i), "DGM", num)
-        
         partitioning = get_partition(G3, num, i)
-        for k in range(len(partitioning)):
-            for j in range(len(partitioning[k])):
-                partitioning[k][j] = int(partitioning[k][j])
         draw_graph(G3, partitioning, "obj_func_" + str(i), "balanced_tree", num)
